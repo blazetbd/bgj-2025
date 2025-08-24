@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class PlayerContoller : MonoBehaviour
@@ -11,6 +12,7 @@ public class PlayerContoller : MonoBehaviour
     public float waxTickRate = -1.0f;
     private Rigidbody2D playerRb;
     private bool isOnGround = true;
+    public TextMeshProUGUI waxLevelText;
 
     void Start()
     {
@@ -64,5 +66,6 @@ public class PlayerContoller : MonoBehaviour
         {
             waxLevel = Mathf.Max(waxLevel + waxTickRate, 0);
         }
+        waxLevelText.text = "Wax %: " + waxLevel;
     }
 }
