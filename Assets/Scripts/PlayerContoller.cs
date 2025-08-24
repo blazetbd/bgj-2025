@@ -17,7 +17,7 @@ public class PlayerContoller : MonoBehaviour
     void Start()
     {
         playerRb = GetComponent<Rigidbody2D>();
-        InvokeRepeating("WaxTick", 1, 1);
+        InvokeRepeating("WaxTick", 1, -waxTickRate);
     }
 
     void Update()
@@ -30,6 +30,8 @@ public class PlayerContoller : MonoBehaviour
             playerRb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             isOnGround = false;
         }
+
+        waxLevelText.text = "Wax %: " + waxLevel;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -44,7 +46,9 @@ public class PlayerContoller : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("WaxPile"))
         {
-            waxTickRate = 1.0f;
+            waxTickRate = 10.0f;
+            CancelInvoke("WaxTick");
+            InvokeRepeating("WaxTick", .2f, .2f);
         }
     }
 
@@ -53,6 +57,8 @@ public class PlayerContoller : MonoBehaviour
         if (collision.gameObject.CompareTag("WaxPile"))
         {
             waxTickRate = -1.0f;
+            CancelInvoke("WaxTick");
+            InvokeRepeating("WaxTick", 1, -waxTickRate);
         }
     }
 
@@ -66,6 +72,5 @@ public class PlayerContoller : MonoBehaviour
         {
             waxLevel = Mathf.Max(waxLevel + waxTickRate, 0);
         }
-        waxLevelText.text = "Wax %: " + waxLevel;
     }
 }
