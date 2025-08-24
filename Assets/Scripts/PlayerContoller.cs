@@ -12,14 +12,12 @@ public class PlayerContoller : MonoBehaviour
     private Rigidbody2D playerRb;
     private bool isOnGround = true;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         playerRb = GetComponent<Rigidbody2D>();
         InvokeRepeating("WaxTick", 1, 1);
     }
 
-    // Update is called once per frame
     void Update()
     {
         horizontalInput = Input.GetAxis("Horizontal");
