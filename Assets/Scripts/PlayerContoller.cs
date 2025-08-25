@@ -10,12 +10,15 @@ public class PlayerContoller : MonoBehaviour
     public float waxLevel = 100.0f;
     private float waxLimit = 100.0f;
     public float waxTickRate = -1.0f;
+    public int maxJumps = 2;
+    private int jumpsLeft;
     private Rigidbody2D playerRb;
     private bool isOnGround = true;
     public TextMeshProUGUI waxLevelText;
 
     void Start()
     {
+        jumpsLeft = maxJumps;
         playerRb = GetComponent<Rigidbody2D>();
         InvokeRepeating("WaxTick", 1, -waxTickRate);
     }
@@ -25,10 +28,11 @@ public class PlayerContoller : MonoBehaviour
         horizontalInput = Input.GetAxis("Horizontal");
         transform.Translate(Vector2.right * horizontalInput * Time.deltaTime * speed);
 
-        if (Input.GetKeyDown(KeyCode.Space) && isOnGround)
+        if (Input.GetKeyDown(KeyCode.Space) && jumpsLeft > 0)
         {
+            playerRb.linearVelocity = new Vector2(playerRb.linearVelocity.x, 0f); 
             playerRb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-            isOnGround = false;
+            jumpsLeft--;
         }
 
         waxLevelText.text = "Wax %: " + waxLevel;
@@ -39,6 +43,15 @@ public class PlayerContoller : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             isOnGround = true;
+            jumpsLeft = maxJumps;
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isOnGround = false;
         }
     }
 
