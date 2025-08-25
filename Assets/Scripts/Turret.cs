@@ -43,10 +43,14 @@ public class Turret : MonoBehaviour
         if (target != null && projectilePrefab != null)
         {
             shotCount += 1;
-            Vector3 spawnPos = new Vector3(firePoint.position.x, firePoint.position.y, 0);
+            Vector3 spawnPos = firePoint.position;
+            spawnPos.z = 0;
             GameObject projectile = Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
-            Vector3 direction = (target.transform.position - firePoint.position).normalized;
-            projectile.transform.rotation = Quaternion.LookRotation(direction);
+
+            Vector2 direction = (target.transform.position - firePoint.position).normalized;
+
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            projectile.transform.rotation = Quaternion.Euler(0, 0, angle);
 
             Rigidbody2D rb = projectile.GetComponent<Rigidbody2D>();
             if (rb != null)
