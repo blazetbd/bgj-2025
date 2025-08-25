@@ -15,6 +15,9 @@ public class PlayerContoller : MonoBehaviour
     private Rigidbody2D playerRb;
     public TextMeshProUGUI waxLevelText;
     public GameObject camera;
+    public GameObject anims;
+    public GameObject runAnim;
+    public GameObject idleAnim;
 
     void Start()
     {
@@ -28,10 +31,27 @@ public class PlayerContoller : MonoBehaviour
     {
         horizontalInput = Input.GetAxis("Horizontal");
         transform.Translate(Vector2.right * horizontalInput * Time.deltaTime * speed);
+        if (horizontalInput < -.1f)
+        {
+            runAnim.SetActive(true);
+            idleAnim.SetActive(false);
+            anims.transform.eulerAngles = new Vector3(transform.eulerAngles.x, 0f, transform.eulerAngles.z);
+        }
+        else if (horizontalInput > .1f)
+        {
+            runAnim.SetActive(true);
+            idleAnim.SetActive(false);
+            anims.transform.eulerAngles = new Vector3(transform.eulerAngles.x, 180f, transform.eulerAngles.z);
+        }
+        else
+        {
+            runAnim.SetActive(false);
+            idleAnim.SetActive(true);
+        }
 
         if (Input.GetKeyDown(KeyCode.Space) && jumpsLeft > 0)
         {
-            playerRb.linearVelocity = new Vector2(playerRb.linearVelocity.x, 0f); 
+            playerRb.linearVelocity = new Vector2(playerRb.linearVelocity.x, 0f);
             playerRb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             jumpsLeft--;
         }
