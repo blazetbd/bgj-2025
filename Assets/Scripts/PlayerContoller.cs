@@ -14,14 +14,14 @@ public class PlayerContoller : MonoBehaviour
     private int jumpsLeft;
     private Rigidbody2D playerRb;
     public TextMeshProUGUI waxLevelText;
-    public GameObject camera;
+    public GameObject mainCamera;
     public GameObject anims;
     public GameObject runAnim;
     public GameObject idleAnim;
 
     void Start()
     {
-        camera = GameObject.Find("Main Camera");
+        mainCamera = GameObject.Find("Main Camera");
         jumpsLeft = maxJumps;
         playerRb = GetComponent<Rigidbody2D>();
         InvokeRepeating("WaxTick", 1, -waxTickRate);
@@ -61,7 +61,7 @@ public class PlayerContoller : MonoBehaviour
 
     void LateUpdate()
     {
-        camera.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y, -10);
+        mainCamera.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y, -10);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
