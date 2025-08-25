@@ -13,7 +13,6 @@ public class PlayerContoller : MonoBehaviour
     public int maxJumps = 2;
     private int jumpsLeft;
     private Rigidbody2D playerRb;
-    private bool isOnGround = true;
     public TextMeshProUGUI waxLevelText;
 
     void Start()
@@ -42,18 +41,10 @@ public class PlayerContoller : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Ground"))
         {
-            isOnGround = true;
             jumpsLeft = maxJumps;
         }
     }
 
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            isOnGround = false;
-        }
-    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
