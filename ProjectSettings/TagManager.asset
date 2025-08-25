@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Ground
   - WaxPile
+  - Projectile
   layers:
   - Default
   - TransparentFX

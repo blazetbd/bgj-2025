@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 7100122742613444404}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -135,6 +135,7 @@ MonoBehaviour:
   jumpForce: 12
   waxLevel: 100
   waxTickRate: -1
+  maxJumps: 2
   waxLevelText: {fileID: 0}
 --- !u!58 &7100122742613444404
 CircleCollider2D:

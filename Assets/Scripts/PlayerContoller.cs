@@ -54,6 +54,10 @@ public class PlayerContoller : MonoBehaviour
             CancelInvoke("WaxTick");
             InvokeRepeating("WaxTick", .2f, .2f);
         }
+        else if (collision.gameObject.CompareTag("Projectile"))
+        {
+            waxLevel -= 5;
+        }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
