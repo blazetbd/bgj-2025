@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -19,8 +20,10 @@ public class PlayerContoller : MonoBehaviour
 
     private int jumpsLeft;
     private bool isDashing = false;
+    private bool isJumping = false;
+    private bool isLanding = false;
     private float dashTimer;
-    private float nextDashTime;   
+    private float nextDashTime;
     private Rigidbody2D playerRb;
 
     public TextMeshProUGUI waxLevelText;
@@ -28,9 +31,13 @@ public class PlayerContoller : MonoBehaviour
     public GameObject anims;
     public GameObject runAnim;
     public GameObject idleAnim;
+    public GameObject jumpStartAnim;
+    public GameObject jumpEndAnim;
+    public GameObject landAnim;
 
     void Start()
     {
+        jumpStartAnim.GetComponent<Animator>().speed = 0.75f;
         nextDashTime = 0f;
         waxTickRate = defaultWaxTickRate;
         mainCamera = GameObject.Find("Main Camera");
@@ -42,26 +49,37 @@ public class PlayerContoller : MonoBehaviour
     void Update()
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");
-        
+        if (isLanding) return;
+
 
         //run and idle animations
         if (horizontalInput < -.1f)
         {
-            runAnim.SetActive(true);
-            idleAnim.SetActive(false);
+            if (!isJumping)
+            {
+                runAnim.SetActive(true);
+                idleAnim.SetActive(false);
+            }
             anims.transform.eulerAngles = new Vector3(transform.eulerAngles.x, 0f, transform.eulerAngles.z);
         }
         else if (horizontalInput > .1f)
         {
-            runAnim.SetActive(true);
-            idleAnim.SetActive(false);
+            if (!isJumping)
+            {
+                runAnim.SetActive(true);
+                idleAnim.SetActive(false);
+            }
             anims.transform.eulerAngles = new Vector3(transform.eulerAngles.x, 180f, transform.eulerAngles.z);
         }
         else
         {
-            runAnim.SetActive(false);
-            idleAnim.SetActive(true);
+            if (!isJumping)
+            {
+                runAnim.SetActive(false);
+                idleAnim.SetActive(true);
+            }
         }
+
 
         //jump logic
         if (Input.GetKeyDown(KeyCode.Space) && jumpsLeft > 0)
@@ -69,6 +87,9 @@ public class PlayerContoller : MonoBehaviour
             playerRb.linearVelocity = new Vector2(playerRb.linearVelocity.x, 0f);
             playerRb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             jumpsLeft--;
+            isJumping = true;
+
+            PlayJumpAnimation();
         }
 
         //dash logic
@@ -98,6 +119,13 @@ public class PlayerContoller : MonoBehaviour
 
         playerRb.linearVelocity = new Vector2(horizontalInput * speed, playerRb.linearVelocity.y);
 
+        if (isLanding) return;
+
+        if (playerRb.linearVelocity.y < -.1f && jumpsLeft < maxJumps)
+        {
+            PlayAnimation(jumpEndAnim);
+        }
+
         if (playerRb.linearVelocity.y < 0)
         {
             playerRb.linearVelocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.fixedDeltaTime;
@@ -113,14 +141,19 @@ public class PlayerContoller : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Ground"))
         {
+            jumpEndAnim.SetActive(false);
             foreach (ContactPoint2D contact in collision.contacts)
-        {
-            if (contact.normal.y > 0.5f) 
             {
-                jumpsLeft = maxJumps; 
-                break;
+                if (contact.normal.y > 0.5f)
+                {
+                    jumpsLeft = maxJumps;
+                    isJumping = false;
+
+                    PlayLandingAnimation(.2f);
+
+                    break;
+                }
             }
-        }
         }
     }
 
@@ -159,5 +192,49 @@ public class PlayerContoller : MonoBehaviour
         {
             waxLevel = Mathf.Max(waxLevel + waxTickRate, 0);
         }
+    }
+    private void PlayJumpAnimation()
+    {
+        runAnim.SetActive(false);
+        idleAnim.SetActive(false);
+        jumpEndAnim.SetActive(false);
+
+        jumpStartAnim.SetActive(false);
+        jumpStartAnim.SetActive(true);
+    }
+
+    private void PlayAnimation(GameObject anim)
+    {
+        runAnim.SetActive(false);
+        idleAnim.SetActive(false);
+        jumpStartAnim.SetActive(false);
+        jumpEndAnim.SetActive(false);
+
+        anim.SetActive(true);
+    }
+
+    private void PlayLandingAnimation(float duration = .2f)
+    {
+        StartCoroutine(LandingRoutine(duration));
+    }
+
+    private IEnumerator LandingRoutine(float duration)
+    {
+        isLanding = true;
+        runAnim.SetActive(false);
+        idleAnim.SetActive(false);
+        jumpStartAnim.SetActive(false);
+        jumpEndAnim.SetActive(false);
+
+        landAnim.SetActive(true);
+
+        yield return new WaitForSeconds(duration);
+
+        isLanding = false;
+        landAnim.SetActive(false);
+        if (Mathf.Abs(horizontalInput) > 0.1f)
+            runAnim.SetActive(true);
+        else
+            idleAnim.SetActive(true);
     }
 }
