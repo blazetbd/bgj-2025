@@ -7,12 +7,20 @@ public class PlayerContoller : MonoBehaviour
     public float speed = 10.0f;
     public float horizontalInput;
     public float jumpForce = 5.0f;
+    public float dashForce = 20f;
+    public float dashDuration = .2f;
     public float waxLevel = 100.0f;
     private float waxLimit = 100.0f;
-    public float waxTickRate = -1.0f;
+    public float defaultWaxTickRate = -2.0f;
+    private float waxTickRate;
     public int maxJumps = 2;
+    public float fallMultiplier = 2.5f;
+
     private int jumpsLeft;
+    private bool isDashing;
+    private float dashTimer;
     private Rigidbody2D playerRb;
+
     public TextMeshProUGUI waxLevelText;
     public GameObject mainCamera;
     public GameObject anims;
@@ -21,6 +29,7 @@ public class PlayerContoller : MonoBehaviour
 
     void Start()
     {
+        waxTickRate = defaultWaxTickRate;
         mainCamera = GameObject.Find("Main Camera");
         jumpsLeft = maxJumps;
         playerRb = GetComponent<Rigidbody2D>();
@@ -29,8 +38,10 @@ public class PlayerContoller : MonoBehaviour
 
     void Update()
     {
-        horizontalInput = Input.GetAxis("Horizontal");
-        transform.Translate(Vector2.right * horizontalInput * Time.deltaTime * speed);
+        horizontalInput = Input.GetAxisRaw("Horizontal");
+        
+
+        //run and idle animations
         if (horizontalInput < -.1f)
         {
             runAnim.SetActive(true);
@@ -49,6 +60,7 @@ public class PlayerContoller : MonoBehaviour
             idleAnim.SetActive(true);
         }
 
+        //jump logic
         if (Input.GetKeyDown(KeyCode.Space) && jumpsLeft > 0)
         {
             playerRb.linearVelocity = new Vector2(playerRb.linearVelocity.x, 0f);
@@ -56,7 +68,38 @@ public class PlayerContoller : MonoBehaviour
             jumpsLeft--;
         }
 
+        //dash logic
+        if (Input.GetKeyDown(KeyCode.LeftShift) && waxLevel >= 5 && horizontalInput != 0)
+        {
+            isDashing = true;
+            dashTimer = dashDuration;
+            playerRb.linearVelocity = new Vector2(horizontalInput * dashForce, 0f);
+            waxLevel -= 5;
+        }
+
+
         waxLevelText.text = "Wax %: " + waxLevel;
+    }
+
+    void FixedUpdate()
+    {
+        if (isDashing)
+        {
+            dashTimer -= Time.fixedDeltaTime;
+            if (dashTimer <= 0f)
+            {
+                isDashing = false;
+            }
+            return; // Skip normal movement while dashing
+        }
+
+        // Normal movement
+        playerRb.linearVelocity = new Vector2(horizontalInput * speed, playerRb.linearVelocity.y);
+
+        if (playerRb.linearVelocity.y < 0)
+        {
+            playerRb.linearVelocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.fixedDeltaTime;
+        }
     }
 
     void LateUpdate()
@@ -98,7 +141,7 @@ public class PlayerContoller : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("WaxPile"))
         {
-            waxTickRate = -1.0f;
+            waxTickRate = defaultWaxTickRate;
             CancelInvoke("WaxTick");
             InvokeRepeating("WaxTick", 1, -waxTickRate);
         }

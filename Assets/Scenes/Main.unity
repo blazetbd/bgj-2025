@@ -684,9 +684,21 @@ PrefabInstance:
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 3168031171120603539, guid: adab8a21fecebbd458f2e43d9839adc5, type: 3}
+      propertyPath: dashForce
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 3168031171120603539, guid: adab8a21fecebbd458f2e43d9839adc5, type: 3}
+      propertyPath: jumpForce
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 3168031171120603539, guid: adab8a21fecebbd458f2e43d9839adc5, type: 3}
       propertyPath: waxLevelText
       value: 
       objectReference: {fileID: 787578353}
+    - target: {fileID: 7135456407051648814, guid: adab8a21fecebbd458f2e43d9839adc5, type: 3}
+      propertyPath: m_Mass
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 7633899004207259762, guid: adab8a21fecebbd458f2e43d9839adc5, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2.39
