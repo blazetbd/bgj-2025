@@ -68,7 +68,14 @@ public class PlayerContoller : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Ground"))
         {
-            jumpsLeft = maxJumps;
+            foreach (ContactPoint2D contact in collision.contacts)
+        {
+            if (contact.normal.y > 0.5f) 
+            {
+                jumpsLeft = maxJumps; 
+                break;
+            }
+        }
         }
     }
 
