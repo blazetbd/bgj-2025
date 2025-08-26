@@ -9,6 +9,7 @@ public class PlayerContoller : MonoBehaviour
     public float jumpForce = 5.0f;
     public float dashForce = 20f;
     public float dashDuration = .2f;
+    public float dashCooldown = 1f;
     public float waxLevel = 100.0f;
     private float waxLimit = 100.0f;
     public float defaultWaxTickRate = -2.0f;
@@ -17,8 +18,9 @@ public class PlayerContoller : MonoBehaviour
     public float fallMultiplier = 2.5f;
 
     private int jumpsLeft;
-    private bool isDashing;
+    private bool isDashing = false;
     private float dashTimer;
+    private float nextDashTime;   
     private Rigidbody2D playerRb;
 
     public TextMeshProUGUI waxLevelText;
@@ -29,6 +31,7 @@ public class PlayerContoller : MonoBehaviour
 
     void Start()
     {
+        nextDashTime = 0f;
         waxTickRate = defaultWaxTickRate;
         mainCamera = GameObject.Find("Main Camera");
         jumpsLeft = maxJumps;
@@ -69,12 +72,11 @@ public class PlayerContoller : MonoBehaviour
         }
 
         //dash logic
-        if (Input.GetKeyDown(KeyCode.LeftShift) && waxLevel >= 5 && horizontalInput != 0)
+        if (!isDashing && Time.time >= nextDashTime && Input.GetKeyDown(KeyCode.LeftShift) && horizontalInput != 0 && waxLevel >= 5)
         {
             isDashing = true;
             dashTimer = dashDuration;
             playerRb.linearVelocity = new Vector2(horizontalInput * dashForce, 0f);
-            waxLevel -= 5;
         }
 
 
@@ -89,11 +91,11 @@ public class PlayerContoller : MonoBehaviour
             if (dashTimer <= 0f)
             {
                 isDashing = false;
+                nextDashTime = Time.time + dashCooldown;
             }
-            return; // Skip normal movement while dashing
+            return;
         }
 
-        // Normal movement
         playerRb.linearVelocity = new Vector2(horizontalInput * speed, playerRb.linearVelocity.y);
 
         if (playerRb.linearVelocity.y < 0)
