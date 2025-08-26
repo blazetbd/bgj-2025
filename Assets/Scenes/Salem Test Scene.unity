@@ -132,12 +132,16 @@ PrefabInstance:
       value: Platform (2)
       objectReference: {fileID: 0}
     - target: {fileID: 6336988999116482982, guid: 13dbee477f4b99b42916d0e35d15d540, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 6.0024586
+      objectReference: {fileID: 0}
+    - target: {fileID: 6336988999116482982, guid: 13dbee477f4b99b42916d0e35d15d540, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -10.957465
+      value: -13.14
       objectReference: {fileID: 0}
     - target: {fileID: 6336988999116482982, guid: 13dbee477f4b99b42916d0e35d15d540, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.6007035
+      value: -0.29
       objectReference: {fileID: 0}
     - target: {fileID: 6336988999116482982, guid: 13dbee477f4b99b42916d0e35d15d540, type: 3}
       propertyPath: m_LocalPosition.z
