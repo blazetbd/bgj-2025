@@ -43,7 +43,7 @@ public class PlayerContoller : MonoBehaviour
         mainCamera = GameObject.Find("Main Camera");
         jumpsLeft = maxJumps;
         playerRb = GetComponent<Rigidbody2D>();
-        InvokeRepeating("WaxTick", 1, -waxTickRate);
+        InvokeRepeating("WaxTick", 1, 1);
     }
 
     void Update()
@@ -178,7 +178,7 @@ public class PlayerContoller : MonoBehaviour
         {
             waxTickRate = defaultWaxTickRate;
             CancelInvoke("WaxTick");
-            InvokeRepeating("WaxTick", 1, -waxTickRate);
+            InvokeRepeating("WaxTick", 1, 1);
         }
     }
 
