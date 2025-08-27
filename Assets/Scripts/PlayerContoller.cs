@@ -34,6 +34,7 @@ public class PlayerContoller : MonoBehaviour
     public GameObject jumpStartAnim;
     public GameObject jumpEndAnim;
     public GameObject landAnim;
+    public GameObject dashAnim;
 
     void Start()
     {
@@ -50,6 +51,7 @@ public class PlayerContoller : MonoBehaviour
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");
         if (isLanding) return;
+        if (isDashing) return;
 
 
         //run and idle animations
@@ -108,9 +110,11 @@ public class PlayerContoller : MonoBehaviour
     {
         if (isDashing)
         {
+            PlayAnimation(dashAnim);
             dashTimer -= Time.fixedDeltaTime;
             if (dashTimer <= 0f)
             {
+                dashAnim.SetActive(false);
                 isDashing = false;
                 nextDashTime = Time.time + dashCooldown;
             }
@@ -198,6 +202,7 @@ public class PlayerContoller : MonoBehaviour
         runAnim.SetActive(false);
         idleAnim.SetActive(false);
         jumpEndAnim.SetActive(false);
+        dashAnim.SetActive(false);
 
         jumpStartAnim.SetActive(false);
         jumpStartAnim.SetActive(true);
@@ -209,6 +214,7 @@ public class PlayerContoller : MonoBehaviour
         idleAnim.SetActive(false);
         jumpStartAnim.SetActive(false);
         jumpEndAnim.SetActive(false);
+        dashAnim.SetActive(false);
 
         anim.SetActive(true);
     }
