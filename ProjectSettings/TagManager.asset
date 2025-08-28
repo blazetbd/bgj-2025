@@ -47,6 +47,18 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Sky
+    uniqueID: 1169291205
+    locked: 0
+  - name: BackTrees
+    uniqueID: 1404966669
+    locked: 0
+  - name: FrontTrees
+    uniqueID: 3254741597
+    locked: 0
+  - name: Clouds
+    uniqueID: 2529977927
+    locked: 0
   - name: Background
     uniqueID: 2664058131
     locked: 0
