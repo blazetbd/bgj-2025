@@ -114,6 +114,7 @@ public class PlayerContoller : MonoBehaviour
             dashTimer -= Time.fixedDeltaTime;
             if (dashTimer <= 0f)
             {
+                waxLevel -= 5;
                 dashAnim.SetActive(false);
                 isDashing = false;
                 nextDashTime = Time.time + dashCooldown;
