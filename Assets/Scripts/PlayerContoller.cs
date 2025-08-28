@@ -28,6 +28,8 @@ public class PlayerContoller : MonoBehaviour
     private Rigidbody2D playerRb;
     private Vector2 startPos;
     private Vector2 restartPos;
+    private int ingredientCount = 0;
+    public int ingredientCountNeeded = 1;
     
 
     public TextMeshProUGUI waxLevelText;
@@ -40,18 +42,29 @@ public class PlayerContoller : MonoBehaviour
     public GameObject jumpEndAnim;
     public GameObject landAnim;
     public GameObject dashAnim;
+    public GameObject doorObject;
+    private Door door;
 
     void Start()
     {
         waxLevelText = GameObject.Find("WaxLevel").GetComponent<TextMeshProUGUI>();
         livesText = GameObject.Find("Lives").GetComponent<TextMeshProUGUI>();
+        doorObject = GameObject.Find("Door");
+        mainCamera = GameObject.Find("Main Camera");
+        jumpStartAnim.GetComponent<Animator>().speed = 0.75f;
+        if (waxLevelText == null || livesText == null || door == null || mainCamera == null)
+        {
+            Debug.Log("WARNING! OBJECT NOT FOUND! CHECK HIERARCHY");
+        }
+        else
+        {
+            door = doorObject.GetComponent<Door>();
+        }
         startPos = transform.position;
         restartPos = startPos;
         livesText.text = "Lives: " + lives;
-        jumpStartAnim.GetComponent<Animator>().speed = 0.75f;
         nextDashTime = 0f;
         waxTickRate = defaultWaxTickRate;
-        mainCamera = GameObject.Find("Main Camera");
         jumpsLeft = maxJumps;
         playerRb = GetComponent<Rigidbody2D>();
         InvokeRepeating("WaxTick", 1, 1);
@@ -188,7 +201,7 @@ public class PlayerContoller : MonoBehaviour
             {
                 Debug.Log("Checkpoint already set");
             }
-            
+
             waxTickRate = 10.0f;
             CancelInvoke("WaxTick");
             InvokeRepeating("WaxTick", .2f, .2f);
@@ -219,6 +232,15 @@ public class PlayerContoller : MonoBehaviour
             }
             livesText.text = "Lives: " + lives;
             Debug.Log("Moved player to " + restartPos);
+        }
+        else if (collision.gameObject.CompareTag("Ingredient"))
+        {
+            ingredientCount += 1;
+            Destroy(collision.gameObject);
+            if (ingredientCount == ingredientCountNeeded && door != null)
+            {
+                door.OpenDoor();
+            }
         }
     }
 

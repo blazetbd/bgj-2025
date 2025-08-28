@@ -8,6 +8,8 @@ TagManager:
   - WaxPile
   - Projectile
   - DeathArea
+  - Door
+  - Ingredient
   layers:
   - Default
   - TransparentFX
