@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7817253989142288890}
   - component: {fileID: 3913662818709381698}
   - component: {fileID: 1159881904233687682}
+  - component: {fileID: -7920257994617005886}
   m_Layer: 0
   m_Name: WaxPile
   m_TagString: WaxPile
@@ -136,6 +137,18 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1.1394992, y: 4.1139507}
   m_EdgeRadius: 0
+--- !u!114 &-7920257994617005886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4196560267538206976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17908983c194dc349a8d73ee9781e648, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7799285390902999821
 GameObject:
   m_ObjectHideFlags: 0

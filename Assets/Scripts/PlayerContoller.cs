@@ -17,6 +17,7 @@ public class PlayerContoller : MonoBehaviour
     private float waxTickRate;
     public int maxJumps = 2;
     public float fallMultiplier = 2.5f;
+    public int lives = 3;
 
     private int jumpsLeft;
     private bool isDashing = false;
@@ -25,8 +26,12 @@ public class PlayerContoller : MonoBehaviour
     private float dashTimer;
     private float nextDashTime;
     private Rigidbody2D playerRb;
+    private Vector2 startPos;
+    private Vector2 restartPos;
+    
 
     public TextMeshProUGUI waxLevelText;
+    public TextMeshProUGUI livesText;
     public GameObject mainCamera;
     public GameObject anims;
     public GameObject runAnim;
@@ -38,6 +43,11 @@ public class PlayerContoller : MonoBehaviour
 
     void Start()
     {
+        waxLevelText = GameObject.Find("WaxLevel").GetComponent<TextMeshProUGUI>();
+        livesText = GameObject.Find("Lives").GetComponent<TextMeshProUGUI>();
+        startPos = transform.position;
+        restartPos = startPos;
+        livesText.text = "Lives: " + lives;
         jumpStartAnim.GetComponent<Animator>().speed = 0.75f;
         nextDashTime = 0f;
         waxTickRate = defaultWaxTickRate;
@@ -50,8 +60,7 @@ public class PlayerContoller : MonoBehaviour
     void Update()
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");
-        if (isLanding) return;
-        if (isDashing) return;
+        if (isLanding || isDashing) return;
 
 
         //run and idle animations
@@ -167,13 +176,49 @@ public class PlayerContoller : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("WaxPile"))
         {
+            WaxPile waxPile = collision.gameObject.GetComponent<WaxPile>();
+
+            if (waxPile.hasBeenTouched == false)
+            {
+                waxPile.hasBeenTouched = true;
+                restartPos = collision.transform.position;
+                Debug.Log("Checkpoint set");
+            }
+            else
+            {
+                Debug.Log("Checkpoint already set");
+            }
+            
             waxTickRate = 10.0f;
             CancelInvoke("WaxTick");
             InvokeRepeating("WaxTick", .2f, .2f);
         }
         else if (collision.gameObject.CompareTag("Projectile"))
         {
-            waxLevel -= 5;
+            if (waxLevel >= 5)
+            {
+                waxLevel -= 5;
+            }
+            else
+            {
+                waxLevel = 0;
+            }
+        }
+        else if (collision.gameObject.CompareTag("DeathArea"))
+        {
+            playerRb.linearVelocity = Vector2.zero;
+            if (playerRb != null && lives != 0)
+            {
+                playerRb.position = restartPos;
+                lives -= 1;
+            }
+            else if (lives == 0)
+            {
+                playerRb.position = startPos;
+                lives = 3;
+            }
+            livesText.text = "Lives: " + lives;
+            Debug.Log("Moved player to " + restartPos);
         }
     }
 
