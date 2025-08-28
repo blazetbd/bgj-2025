@@ -52,7 +52,7 @@ public class PlayerContoller : MonoBehaviour
         doorObject = GameObject.Find("Door");
         mainCamera = GameObject.Find("Main Camera");
         jumpStartAnim.GetComponent<Animator>().speed = 0.75f;
-        if (waxLevelText == null || livesText == null || door == null || mainCamera == null)
+        if (waxLevelText == null || livesText == null || doorObject == null || mainCamera == null)
         {
             Debug.Log("WARNING! OBJECT NOT FOUND! CHECK HIERARCHY");
         }
@@ -240,6 +240,13 @@ public class PlayerContoller : MonoBehaviour
             if (ingredientCount == ingredientCountNeeded && door != null)
             {
                 door.OpenDoor();
+            }
+        }
+        else if (collision.gameObject.CompareTag("Door"))
+        {
+            if (ingredientCount == ingredientCountNeeded)
+            {
+                Debug.Log("End of Level! (logic here later)");
             }
         }
     }
