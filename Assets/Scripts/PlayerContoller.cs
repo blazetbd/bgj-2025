@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerContoller : MonoBehaviour
 {
@@ -13,7 +14,7 @@ public class PlayerContoller : MonoBehaviour
     public float dashCooldown = 1f;
     public float waxLevel = 100.0f;
     private float waxLimit = 100.0f;
-    public float defaultWaxTickRate = -2.0f;
+    public float defaultWaxTickRate = -10.0f;
     private float waxTickRate;
     public int maxJumps = 2;
     public float fallMultiplier = 2.5f;
@@ -31,9 +32,6 @@ public class PlayerContoller : MonoBehaviour
     private int ingredientCount = 0;
     public int ingredientCountNeeded = 1;
     
-
-    public TextMeshProUGUI waxLevelText;
-    public TextMeshProUGUI livesText;
     public GameObject mainCamera;
     public GameObject anims;
     public GameObject runAnim;
@@ -44,15 +42,20 @@ public class PlayerContoller : MonoBehaviour
     public GameObject dashAnim;
     public GameObject doorObject;
     private Door door;
+    public GameObject lifePrefab;
+    public Transform livesPanel;
+    public Slider waxBar;
+
+    private List<GameObject> lifeIcons = new List<GameObject>();
 
     void Start()
     {
-        waxLevelText = GameObject.Find("WaxLevel").GetComponent<TextMeshProUGUI>();
-        livesText = GameObject.Find("Lives").GetComponent<TextMeshProUGUI>();
         doorObject = GameObject.Find("Door");
         mainCamera = GameObject.Find("Main Camera");
+        livesPanel = GameObject.Find("LivesPanel").transform;
+        waxBar = GameObject.Find("WaxBar").GetComponent<Slider>();
         jumpStartAnim.GetComponent<Animator>().speed = 0.75f;
-        if (waxLevelText == null || livesText == null || doorObject == null || mainCamera == null)
+        if (doorObject == null || mainCamera == null || livesPanel == null || waxBar == null)
         {
             Debug.Log("WARNING! OBJECT NOT FOUND! CHECK HIERARCHY");
         }
@@ -62,19 +65,27 @@ public class PlayerContoller : MonoBehaviour
         }
         startPos = transform.position;
         restartPos = startPos;
-        livesText.text = "Lives: " + lives;
         nextDashTime = 0f;
         waxTickRate = defaultWaxTickRate;
         jumpsLeft = maxJumps;
         playerRb = GetComponent<Rigidbody2D>();
-        InvokeRepeating("WaxTick", 1, 1);
+        UpdateLivesDisplay();
     }
 
     void Update()
     {
+        //handle wax updates
+        if (waxLevel >= 0 && waxLevel <= waxLimit)
+        {
+            waxLevel += waxTickRate * Time.deltaTime;
+        }
+
+        waxLevel = Mathf.Clamp(waxLevel, 0, waxLimit);
+        waxBar.value = waxLevel;
+
+
         horizontalInput = Input.GetAxisRaw("Horizontal");
         if (isLanding || isDashing) return;
-
 
         //run and idle animations
         if (horizontalInput < -.1f)
@@ -123,9 +134,6 @@ public class PlayerContoller : MonoBehaviour
             dashTimer = dashDuration;
             playerRb.linearVelocity = new Vector2(horizontalInput * dashForce, 0f);
         }
-
-
-        waxLevelText.text = "Wax %: " + waxLevel;
     }
 
     void FixedUpdate()
@@ -202,9 +210,7 @@ public class PlayerContoller : MonoBehaviour
                 Debug.Log("Checkpoint already set");
             }
 
-            waxTickRate = 10.0f;
-            CancelInvoke("WaxTick");
-            InvokeRepeating("WaxTick", .2f, .2f);
+            waxTickRate = 20.0f;
         }
         else if (collision.gameObject.CompareTag("Projectile"))
         {
@@ -223,14 +229,14 @@ public class PlayerContoller : MonoBehaviour
             if (playerRb != null && lives != 0)
             {
                 playerRb.position = restartPos;
-                lives -= 1;
+                LoseLife();
             }
             else if (lives == 0)
             {
                 playerRb.position = startPos;
                 lives = 3;
+                UpdateLivesDisplay();
             }
-            livesText.text = "Lives: " + lives;
             Debug.Log("Moved player to " + restartPos);
         }
         else if (collision.gameObject.CompareTag("Ingredient"))
@@ -256,22 +262,33 @@ public class PlayerContoller : MonoBehaviour
         if (collision.gameObject.CompareTag("WaxPile"))
         {
             waxTickRate = defaultWaxTickRate;
-            CancelInvoke("WaxTick");
-            InvokeRepeating("WaxTick", 1, 1);
         }
     }
 
-    private void WaxTick()
+    public void UpdateLivesDisplay()
     {
-        if (waxTickRate > 0)
+        foreach (var icon in lifeIcons)
         {
-            waxLevel = Mathf.Min(waxLevel + waxTickRate, waxLimit);
+            Destroy(icon);
         }
-        else
+        lifeIcons.Clear();
+
+        for (int i = 0; i < lives; i++)
         {
-            waxLevel = Mathf.Max(waxLevel + waxTickRate, 0);
+            GameObject life = Instantiate(lifePrefab, livesPanel);
+            lifeIcons.Add(life);
         }
     }
+
+    public void LoseLife()
+    {
+        if (lives > 0)
+        {
+            lives--;
+            UpdateLivesDisplay();
+        }
+    }
+
     private void PlayJumpAnimation()
     {
         runAnim.SetActive(false);

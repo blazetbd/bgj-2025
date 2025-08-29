@@ -153,6 +153,8 @@ MonoBehaviour:
   landAnim: {fileID: 4284872854096608655}
   dashAnim: {fileID: 7476103575036659819}
   doorObject: {fileID: 0}
+  lifePrefab: {fileID: 1210685511450316637, guid: b63fd9ebf43a4144eae29d57e5576ba8, type: 3}
+  livesPanel: {fileID: 0}
 --- !u!58 &7100122742613444404
 CircleCollider2D:
   m_ObjectHideFlags: 0
