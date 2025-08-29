@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Turret : MonoBehaviour
@@ -6,16 +7,17 @@ public class Turret : MonoBehaviour
     public GameObject projectilePrefab;
     public Transform firePoint;
     public float projectileSpeed = 1.0f;
-    private int shotCount = 0;
+    public GameObject idleObject;
+    public GameObject fireObject;
+
+    private Vector3 firePointPos;
+    private Animator idleAnim;
+
     void Start()
     {
-
-    }
-
-
-    void Update()
-    {
-
+        firePointPos = firePoint.position;
+        idleAnim = idleObject.GetComponent<Animator>();
+        idleAnim.speed = 0.208f;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -40,14 +42,14 @@ public class Turret : MonoBehaviour
 
     private void Shoot()
     {
+        StartCoroutine(ShootAnim(.5f));
         if (target != null && projectilePrefab != null)
         {
-            shotCount += 1;
-            Vector3 spawnPos = firePoint.position;
+            Vector3 spawnPos = firePointPos;
             spawnPos.z = 0;
             GameObject projectile = Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
 
-            Vector2 direction = (target.transform.position - firePoint.position).normalized;
+            Vector2 direction = (target.transform.position - firePointPos).normalized;
 
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             projectile.transform.rotation = Quaternion.Euler(0, 0, angle);
@@ -58,6 +60,15 @@ public class Turret : MonoBehaviour
                 rb.linearVelocity = direction * projectileSpeed;
             }
             //Debug.Log("Shot " + shotCount + target);  
-        }    
+        }
+    }
+
+    private IEnumerator ShootAnim(float duration)
+    {
+        idleObject.SetActive(false);
+        fireObject.SetActive(true);
+        yield return new WaitForSeconds(duration);
+        fireObject.SetActive(false);
+        idleObject.SetActive(true);
     }
 }
